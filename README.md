@@ -9,7 +9,7 @@ Currently, all desktop browsers and iOS devices are supported.  Support for Andr
 
 ##Requirements
 
-touch-adapter can run completely stand alone, operating directly on the DOM, or you can use a library-specific wrapper version. Currently there is only jQuery 1.7.x, but MooTools and YUI, possibly RightJS, Zepto and Prototype are coming soon.   Oh and the 1.7.x dependency on jQuery is nothing that could not be changed easily enough.
+touch-adapter can run completely stand alone, operating directly on the DOM, or you can use a library-specific wrapper version. Currently there is only jQuery 1.7.x, but others are coming soon.   Oh and the 1.7.x dependency on jQuery is nothing that could not be changed easily enough.
 
 ##Event Mapping
 
@@ -86,6 +86,7 @@ Coming shortly.
 ###YUI3
 
 Thinking about doing this too. But YUI3 seems to have pretty decent touch event support already.
+
 
 
 
