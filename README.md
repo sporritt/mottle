@@ -19,7 +19,7 @@ The three basic touch events are mapped in this way:
 - __touchend__ -> __mouseup__
 - __touchmove__ -> __mousemove__
 
-In addition, touch-adapter support click, dblclick and contextmenu, by starting a timer on touchstart and 
+In addition, touch-adapter supports click, dblclick and contextmenu, by starting a timer on touchstart and then checking if the touchend event happens within a certain threshold afterwards.  For the `contextmenu` event, touch-adapter looks for a touchstart+touchend using two fingers (this is one way you can do a right-click on the Mac's trackpad).
 
 ##Usage
 
