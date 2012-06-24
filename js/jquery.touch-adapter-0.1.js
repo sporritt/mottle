@@ -1,0 +1,3 @@
+/*
+jQuery wrapper for TouchAdapter
+*/
