@@ -17,23 +17,28 @@
 		
 		<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>		
 		<script type="text/javascript" src="../js/touch-adapter-0.1.js"></script>
+		<script type="text/javascript" src="../js/jquery.touch-adapter-0.1.js"></script>
 
 		<script type="text/javascript">
 			$(function() {
 
 				var d = function(msg) {
-					return function(e) {						
+					return function(e) {	
+				//		e.stopPropagation();
+				//		e.preventDefault();					
 						$("#debug").html(msg);
-						//console.log(msg);
+						console.log(msg);
 					};
 				},
 				ta,
 				w = document.getElementById("workspace"),
+				ws = $(w),
 				move = d("mousemove"),
 				down = d("mousedown"),
 				up = d("mouseup"),
 				click = d("click"),
-				contextmenu = d("contextmenu");
+				contextmenu = d("contextmenu"),
+				dblclick = d("dblclick");
 								
 
 // jquery bind/unbind version
@@ -43,40 +48,44 @@
 					unbind:function(obj, evt, fn) { $(obj).unbind(evt, fn); },
 					unwrap:function(e) { return e.originalEvent; }
 				});
-				ta.bind($("#workspace"), "mousemove", move);
-				ta.bind($("#workspace"), "mouseup", up);
-				ta.bind($("#workspace"), "mousedown", down);
-				ta.bind($("#workspace"), "click", click);
-				ta.bind($("#workspace"), "contextmenu", contextmenu);
+				ta.bind(ws, "mousemove", move);
+				ta.bind(ws, "mouseup", up);
+				ta.bind(ws, "mousedown", down);
+				ta.bind(ws, "click", click);
+				ta.bind(ws, "dblclick", dblclick);
+				ta.bind(ws, "contextmenu", contextmenu);
 
 				$("#btnUnbind").bind("click", function() {
-					ta.unbind($("#workspace"), "mousemove");
-					ta.unbind($("#workspace"), "mouseup");
-					ta.unbind($("#workspace"), "mousedown");
-					ta.unbind($("#workspace"), "click");	
-					ta.unbind($("#workspace"), "contextmenu");
+					ta.unbind(ws, "mousemove");
+					ta.unbind(ws, "mouseup");
+					ta.unbind(ws, "mousedown");
+					ta.unbind(ws, "click");	
+					ta.unbind(ws, "dblclick");	
+					ta.unbind(ws, "contextmenu");
 				});
 //*/			
 
 // jquery on/off version
-//*
+/*
 				ta = new TouchAdapter({
 					bind:function(obj, evt, fn) { $(obj).on(evt, fn); },
 					unbind:function(obj, evt, fn) { $(obj).off(evt, fn); },
 					unwrap:function(e) { return e.originalEvent; }
 				});
-				ta.bind($("#workspace"), "mousemove", move);
-				ta.bind($("#workspace"), "mouseup", up);
-				ta.bind($("#workspace"), "mousedown", down);
-				ta.bind($("#workspace"), "click", click);
-				ta.bind($("#workspace"), "contextmenu", contextmenu);
+				ta.bind(ws, "mousemove", move);
+				ta.bind(ws, "mouseup", up);
+				ta.bind(ws, "mousedown", down);
+				ta.bind(ws, "click", click);
+				ta.bind(ws, "dblclick", dblclick);
+				ta.bind(ws, "contextmenu", contextmenu);
 
 				$("#btnUnbind").bind("click", function() {
-					ta.unbind($("#workspace"), "mousemove");
-					ta.unbind($("#workspace"), "mouseup");
-					ta.unbind($("#workspace"), "mousedown");
-					ta.unbind($("#workspace"), "click");	
-					ta.unbind($("#workspace"), "contextmenu");
+					ta.unbind(ws, "mousemove");
+					ta.unbind(ws, "mouseup");
+					ta.unbind(ws, "mousedown");
+					ta.unbind(ws, "click");	
+					ta.unbind(ws, "dblclick");	
+					ta.unbind(ws, "contextmenu");
 				});
 //*/			
 
@@ -88,6 +97,7 @@
 				ta.bind(w, "mouseup", up);
 				ta.bind(w, "mousedown", down);
 				ta.bind(w, "click", click);
+				ta.bind(w, "dblclick", dblclick);
 				ta.bind(w, "contextmenu", contextmenu);
 
 				$("#btnUnbind").bind("click", function() {
@@ -95,9 +105,49 @@
 					ta.unbind(w, "mouseup", up);
 					ta.unbind(w, "mousedown", down);
 					ta.unbind(w, "click", click);	
-					ta.unbind(w, "click", contextmenu);
+					ta.unbind(w, "contextmenu", contextmenu);
+					ta.unbind(w, "dblclick", dblclick);
 				});
-//*/				
+//*/	
+
+// jquery.touchadapter version
+/*
+				ta = new jQueryTouchAdapter();
+				ta.bind(ws, "mousemove", move);
+				ta.bind(ws, "mouseup", up);
+				ta.bind(ws, "mousedown", down);
+				ta.bind(ws, "click", click);
+				ta.bind(ws, "dblclick", dblclick);
+				ta.bind(ws, "contextmenu", contextmenu);
+
+				$("#btnUnbind").bind("click", function() {
+					ta.unbind(ws, "mousemove");
+					ta.unbind(ws, "mouseup");
+					ta.unbind(ws, "mousedown");
+					ta.unbind(ws, "click");	
+					ta.unbind(ws, "contextmenu");
+					ta.unbind(ws, "dblclick");
+				});
+//*/	
+
+// jquery.touchadapter plugin version
+//*
+				ws.taBind("mousemove", move)
+				  .taBind("mouseup", up)
+				  .taBind("mousedown", down)
+				  .taBind("click", click)
+				  .taBind("dblclick", dblclick)
+				  .taBind("contextmenu", contextmenu);
+
+				$("#btnUnbind").bind("click", function() {
+					ws.taUnbind("mousemove")
+					  .taUnbind("mouseup")
+					  .taUnbind("mousedown")
+					  .taUnbind("click")
+					  .taUnbind("contextmenu")
+					  .taUnbind("dblclick");
+				});
+//*/					
 				
 			});
 		</script>

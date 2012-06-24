@@ -20,9 +20,10 @@
 
 	var isIOS = ((/iphone|ipad/gi).test(navigator.appVersion)),
 		isAndroid = false,
-		click = "click", mousedown = "mousedown", mouseup = "mouseup", mousemove = "mousemove",
+		click = "click", dblclick = "dblclick", mousedown = "mousedown", mouseup = "mouseup", mousemove = "mousemove",
 		touchstart = "touchstart", touchend = "touchend", touchmove = "touchmove",
-		contextmenu = "contextmenu", ta_is_down = "__touchAdaptorIsDown", ta_timeout = "__touchAdaptorTimeout",
+		contextmenu = "contextmenu", ta_is_down = "__touchAdaptorIsDown", ta_click_timeout = "__touchAdaptorClickTimeout",
+		ta_context_menu_timeout = "__touchAdaptorContextMenuTimeout",
 		ta_down = "__touchAdapterDown", ta_up = "__touchAdapterUp", 
 		ta_context_down = "__touchAdapterContextDown", ta_context_up = "__touchAdapterContextUp",
 		//http://www.quirksmode.org/blog/archives/2005/10/_and_the_winner_1.html
@@ -45,15 +46,17 @@
 				obj[type+fn] = null;
 				obj["e"+type+fn] = null;
 			}
-		};		
+		};	
 
 	window.TouchAdapter = function(params) {
 		params = params || {};
-		var _bind = params.bind || addEvent,
+		var self = this, _bind = params.bind || addEvent,
 			_unbind = params.unbind || removeEvent,
 			_unwrap = params.unwrap || function(e) { return e; },
 			wrapClick = params.wrapClick !== false,
 			clickDelay = params.clickDelay || 150,
+			wrapDblClick = params.wrapDblClick !== false,
+			doubleClickThreshold = params.doubleClickThreshold || 250,
 			wrapContextMenu = params.wrapContextMenu !== false,
 			wrapDown = params.wrapDown !== false,
 			wrapUp = params.wrapUp !== false,
@@ -65,24 +68,46 @@
 				}				
 				return t;
 			},
-			_addClickWrapper = function(obj, fn, touchCount, downId, upId) {
+			_addClickWrapper = function(obj, fn, touchCount, downId, upId, supportDoubleClick) {
+				var handler = {
+					down:false,
+					touches:0,
+					originalEvent:null,
+					lastClick:null,
+					timeout:null
+				};
 				var down = function(e) {						
 					var ee = _unwrap(e), self = this, tc = _getTouchCount(ee);					
 					if (tc == touchCount) {
-						self.originalEvent = ee;											
-						obj[ta_is_down] = true;										
-						obj[ta_timeout] = window.setTimeout(function() {									
-							obj[ta_is_down] = null;
+				
+						handler.originalEvent = ee;	
+						handler.touches = tc;										
+						handler.down = true;							
+						handler.timeout = window.setTimeout(function() {														
+							handler.down = null;
 						}, clickDelay);
 					}
 				};
 				fn[downId] = down;
 				_bind(obj, touchstart, down);	
-				var up = function(e) {					
-					var ee =  _unwrap(e);
-					if (obj[ta_is_down]) fn(fn[downId].originalEvent);						
-					obj[ta_is_down] = null;
-					window.clearTimeout(obj[ta_timeout]);						
+				var up = function(e) {										
+					var ee =  _unwrap(e);					
+					if (handler.down) {
+						// if supporting double click, check if their is a timestamp for a recent click
+						if (supportDoubleClick) {
+							var t = new Date().getTime();
+							if (handler.lastClick) {							
+								if (t - handler.lastClick < doubleClickThreshold)
+									fn(handler.originalEvent);
+							}
+
+							handler.lastClick = t;
+						}					
+						else 	
+							fn(handler.originalEvent);						
+					}
+					handler.down = null;
+					window.clearTimeout(handler.timeout);						
 				};				
 				fn[upId] = up;	
 				_bind(obj, touchend, up);
@@ -92,6 +117,9 @@
 			if (isIOS) {			
 				if (evt === click && wrapClick) {
 					_addClickWrapper(obj, fn, 1, ta_down, ta_up);
+				}
+				else if (evt === dblclick && wrapDblClick) {
+					_addClickWrapper(obj, fn, 1, ta_down, ta_up, true);
 				}
 				else if (evt === contextmenu && wrapContextMenu) {
 					_addClickWrapper(obj, fn, 2, ta_context_down, ta_context_up);
@@ -110,6 +138,8 @@
 			}
 			else 
 				_bind(obj, evt, fn);
+
+			return self;
 		};
 
 		this.unbind = function(obj, evt, fn) {
@@ -120,7 +150,7 @@
 					_unbind(obj, touchend, fn[ta_up]);
 					fn[ta_up] = null;
 				}
-				else if (evt === click && wrapContextMenu) {
+				else if (evt === contextmenu && wrapContextMenu) {
 					_unbind(obj, touchstart, fn[ta_context_down]);
 					fn[ta_context_down] = null;
 					_unbind(obj, touchend, fn[ta_context_up]);
@@ -135,8 +165,12 @@
 				else if (evt == mousemove && wrapMove) {
 					_unbind(obj, touchmove, fn);
 				}
+				else
+					_unbind(obj, evt, fn);
 			}
 			_unbind(obj, evt, fn);
+
+			return self;
 		};
 	};
 
