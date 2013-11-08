@@ -3,7 +3,7 @@
 	click, mousedown, mouseup and mousemove, and the touch adapter will automatically register corresponding
 	touch events for each of these.  note that 'click' is achieved through setting a timer on touchstart and
 	firing an event on touchend if the timer has not yet expired. The delay for this timer can be set on 
-	the touchadapter's constructor (clickDelay); the default is 150ms.
+	the touchadapter's constructor (clickThreshold); the default is 150ms.
 
 	Note that TouchAdapter can run without any supporting library - it contains event bind and unbind
 	functions internally, which operate on DOM nodes - but is also designed to support any library of
@@ -54,7 +54,7 @@
 			_unbind = params.unbind || removeEvent,
 			_unwrap = params.unwrap || function(e) { return e; },
 			wrapClick = params.wrapClick !== false,
-			clickDelay = params.clickDelay || 150,
+			clickThreshold = params.clickThreshold || 150,
 			wrapDblClick = params.wrapDblClick !== false,
 			doubleClickThreshold = params.doubleClickThreshold || 250,
 			wrapContextMenu = params.wrapContextMenu !== false,
@@ -85,7 +85,7 @@
 						handler.down = true;							
 						handler.timeout = window.setTimeout(function() {														
 							handler.down = null;
-						}, clickDelay);
+						}, clickThreshold);
 					}
 				};
 				fn[downId] = down;
