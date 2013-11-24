@@ -18,7 +18,7 @@
 		ctx = ctx || el.parentNode;
 		var possibles = ctx.querySelectorAll(selector);
 		for (var i = 0; i < possibles.length; i++) {
-			if (possibles[i] === this) {
+			if (possibles[i] === el) {
 				return true;
 			}
 		}
