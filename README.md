@@ -42,8 +42,8 @@ By default, all browsers consider a `mouseup` event on some element on which the
 Allowed constructor parameters are:
 
 - **smartClicks** If true, will not report click events if the mouse has moved between mousedown and mouseup.
-- **clickThreshold** Amount of time, in milliseconds, inside of which a mousedown should be followed by a mouseup in order to be considered as a click in a touch device.
-- **dblClickThreshold** Amount of time, in milliseconds, inside of which two consecutive clicks must occur in order to be considered a double click in a touch device.
+- **clickThreshold** Amount of time, in milliseconds, inside of which a mousedown should be followed by a mouseup in order to be considered as a click in a touch device. Default is 150ms.
+- **dblClickThreshold** Amount of time, in milliseconds, inside of which two consecutive clicks must occur in order to be considered a double click in a touch device. Default is 250ms.
 
 #### Event Binding
 
