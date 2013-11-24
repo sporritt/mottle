@@ -77,7 +77,7 @@
 		var self = this, 
 			guid = 1,						
 			clickThreshold = params.clickThreshold || 150,
-			doubleClickThreshold = params.doubleClickThreshold || 250,			
+			dlbClickThreshold = params.dblClickThreshold || 250,			
 			_smartClicks = params.smartClicks,	
 			_smartClick = {
 				down:function(e, obj) {						
@@ -149,7 +149,7 @@
 						if (supportDoubleClick) {
 							var t = new Date().getTime();
 							if (handler.lastClick) {							
-								if (t - handler.lastClick < doubleClickThreshold)
+								if (t - handler.lastClick < dblClickThreshold)
 									fn(handler.originalEvent);
 							}
 
