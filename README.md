@@ -1,7 +1,7 @@
 #touch-adapter
 =============
 
-touch-adapter is a simple wrapper that allows you to register event listeners for mouse events and have those listeners respond to the corresponding touch devices.  Support for click/dblclick/contextmenu is also included. I created this because I wanted a simple way to normalise a UI I was building across desktop and mobile, and I didn't need a mobile framework; just touch events.
+TouchAdapter is a simple wrapper that allows you to register event listeners for mouse events and have those listeners respond to the corresponding touch devices.  Support for `click`/`dblclick`/`contextmenu` is also included. I created this because I wanted a simple way to normalise a UI I was building across desktop and mobile, and I didn't need a mobile framework; just touch events.
 
 ##Browser Support
 
@@ -9,7 +9,13 @@ Currently, all desktop browsers and iOS devices are supported.  Support for Andr
 
 ##Requirements
 
-touch-adapter can run completely stand alone, operating directly on the DOM, or you can use a library-specific wrapper version. Currently there is only jQuery 1.7.x, but others are coming soon.   Oh and the 1.7.x dependency on jQuery is nothing that could not be changed easily enough.
+#### 0.1
+
+Version 0.1 of TouchAdapter runs either stand alone (requiring no external library), or it can run on top of jQuery - which is to say that it maps to jQuery's event binding methods.  It was originally my intention to create other library wrappers, but I haven't yet got around to it. And, for reasons discussed in the 0.2 requirements section below, it is not likely I will get around to it.
+
+#### 0.2
+
+Version 0.2 has abandoned integration with an external library, for various reasons (all of which, I can assure you, are excellent).
 
 ##Event Mapping
 
@@ -19,18 +25,60 @@ The three basic touch events are mapped in this way:
 - __touchend__ -> __mouseup__
 - __touchmove__ -> __mousemove__
 
-In addition, touch-adapter supports click, dblclick and contextmenu, by starting a timer on touchstart and then checking if the touchend event happens within a certain threshold afterwards.  For the `contextmenu` event, touch-adapter looks for a touchstart+touchend using two fingers (this is one way you can do a right-click on the Mac's trackpad).
+In addition,TouchAdapter supports click, dblclick and contextmenu, by starting a timer on touchstart and then checking if the touchend event happens within a certain threshold afterwards.  For the `contextmenu` event, touch-adapter looks for a touchstart+touchend using two fingers (this is one way you can do a right-click on the Mac's trackpad).
+
+##Smart click handling (0.2 only)
+
+By default, all browsers consider a `mouseup` event on some element on which there was recently a `mousedown` to be sufficient cause to fire a `click` event.  If the mouse has moved between `mousedown` and `mouseup`, though, for many applications it is absolutely not the case that the two events should be considered a `click`. So you can pass a parameter to the TouchAdapter constructor to tell it that `click` should only be fired if the mouse has not moved between `mousedown` and `mouseup`.
 
 ##Usage
 
+### 0.2
+
+#### Constructor
+
+	var TouchAdapter = new TouchAdapter(PARAMS);
+
+Allowed constructor parameters are:
+
+- **smartClicks** If true, will not report click events if the mouse has moved between mousedown and mouseup.
+- **clickThreshold** Amount of time, in milliseconds, inside of which a mousedown should be followed by a mouseup in order to be considered as a click in a touch device.
+- **clickThreshold** Amount of time, in milliseconds, inside of which two consecutive clicks must occur in order to be considered a double click in a touch device.
+
+#### Event Binding
+
+To directly bind an event handler on some element, use `bind`:
+
+	touchAdapter.bind(someElement, "click", aFunction);
+	touchAdapter.bind(someElement, "dblclick", anotherFunction);	
+
+To subsequently unbind, use `unbind`. Note you have to supply the original function:
+
+	touchAdapter.unbind(someOtherElement, "dblclick", anotherFunction);
+
+#### Event Delegation
+
+To have some element act as an event handling delegate for some set of its child elements, use `on`:
+
+	touchAdapter.on(someElement, "div.foo, div.bar", "click", aFunction);
+
+To remove the event delegation, use `off`:
+
+	touchAdapter.off(someElement, "click", aFunction);
+
+Note that the `off` function does not take a list of selectors as argument. It removes all event delegation for the set of child selectors with which the given function was registered.
+
+---
+
+### 0.1
 
 ###Standalone
 
-To use the standalone touch-adapter, you first create one:
+First create one:
 
 	var touchAdapter = new TouchAdapter();
 
-..and you then make calls to `bind` and `unbind`:
+..and you make calls to `bind` and `unbind`:
 
 	touchAdapter.bind(someElement, "click", aFunction);
 	touchAdapter.unbind(someOtherElement, "dblclick", anotherFunction);
