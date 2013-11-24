@@ -9,6 +9,22 @@
 */
 ;(function() {
 
+	var ms = typeof HTMLElement != "undefined" ? (HTMLElement.prototype.webkitMatchesSelector || HTMLElement.prototype.mozMatchesSelector || HTMLElement.prototype.oMatchesSelector || HTMLElement.prototype.msMatchesSelector) : null;
+	var matchesSelector = function(el, selector, ctx) {
+		if (ms) {
+			return ms.apply(el, [ selector, ctx ]);
+		} 
+
+		ctx = ctx || el.parentNode;
+		var possibles = ctx.querySelectorAll(selector);
+		for (var i = 0; i < possibles.length; i++) {
+			if (possibles[i] === this) {
+				return true;
+			}
+		}
+		return false;
+	};
+
 	var isTouchDevice = "ontouchstart" in document.documentElement,
 		downEvent = isTouchDevice ? "touchstart" : "mousedown",
 		upEvent = isTouchDevice ? "touchend" : "mouseup",
@@ -250,12 +266,12 @@
 			}
 		};
 
-		var _makeDelegateFunction = function(children, fn) {
+		var _makeDelegateFunction = function(el, children, fn) {
 				var c = children.split(",");
 				return function(e) {
 					var t = e.srcElement || e.target;
 					for (var i = 0; i < c.length; i++) {
-						if (t.matchesSelector(c[i])) {
+						if (matchesSelector(t, c[i], el)) {
 							fn.apply(c[i], arguments);
 							return;
 						}
@@ -274,7 +290,7 @@
 		* @param {Function} fn Event handler function.
 		*/
 		this.on = function(el, children, event, fn) {
-			var dlf = _makeDelegateFunction(children, fn);
+			var dlf = _makeDelegateFunction(el, children, fn);
 			this.bind(el, event, dlf);
 			fn.__tauid = dlf.__tauid; // copy the touch adapter guid into the original function. then unbind will work.
 			_delegates[dlf.__tauid] = dlf;
