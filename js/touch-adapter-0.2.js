@@ -5,7 +5,7 @@
 	firing an event on touchend if the timer has not yet expired. The delay for this timer can be set on 
 	the touchadapter's constructor (clickThreshold); the default is 150ms.
 
-	TouchAdapter has no dependencies, but can integrate with supporting libraries such as jQuery. See docs.
+	TouchAdapter has no dependencies except for the matchesSelector polyfill script.
 */
 ;(function() {
 
@@ -268,8 +268,10 @@
 		* @name TouchAdapter#on
 		* @function
 		* @desc Delegate event handling for `children` to a single event listener on `el`.
-		* @param el {Element} el Element to act as delegate.
+		* @param {Element} el Element to act as delegate.
+		* @param {String} event Event ID.
 		* @param {String} children Comma-delimited list of selectors identifying allowed children.
+		* @param {Function} fn Event handler function.
 		*/
 		this.on = function(el, children, event, fn) {
 			var dlf = _makeDelegateFunction(children, fn);
@@ -279,6 +281,16 @@
 			return this;
 		};	
 
+		/**
+		* @name TouchAdapter#off
+		* @function
+		* @desc Cancel delegate event handling for the given function. Note that unlike with 'on' you cannot supply
+		* a list of child selectors here: it removes event delegation from all of the child selectors for which the
+		* given function was registered.
+		* @param {Element} el Element acting as delegate.
+		* @param {String} event Event ID.
+		* @param {Function} fn Event handler function.
+		*/
 		this.off = function(el, event, fn) {
 			var dlf = fn.__tauid ? _delegates[fn.__tauid] : null;
 			if (dlf) {
