@@ -29,7 +29,9 @@
 		downEvent = isTouchDevice ? "touchstart" : "mousedown",
 		upEvent = isTouchDevice ? "touchend" : "mouseup",
 		moveEvent = isTouchDevice ? "touchmove" : "mousemove",
-		touchmap = { "mousedown":"touchstart", "mouseup":"touchend", "mousemove":"touchmove" },
+		touchMap = { "mousedown":"touchstart", "mouseup":"touchend", "mousemove":"touchmove" },
+		click="click", dblclick="dblclick",contextmenu="contextmenu",
+		touchstart="touchstart",touchend="touchend",touchmove="touchmove",
 		ta_down = "__touchAdapterDown", ta_up = "__touchAdapterUp", 
 		ta_context_down = "__touchAdapterContextDown", ta_context_up = "__touchAdapterContextUp",
 		iev = (function() {
@@ -177,7 +179,7 @@
 					handler.down = null;
 					window.clearTimeout(handler.timeout);						
 				};				
-				fn[eventsIds[1]] = up;	
+				fn[eventIds[1]] = up;	
 				__bind(obj, touchend, up);
 			};
 
